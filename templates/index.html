@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Histogram Generator</title>
+</head>
+<body>
+    <h1>Upload your file</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="datafile" required>
+        <button type="submit">Upload and Plot</button>
+    </form>
+    {% if plot_url %}
+        <h2>Your Histogram:</h2>
+        <img src="data:image/png;base64,{{ plot_url }}">
+    {% endif %}
+</body>
+</html>
