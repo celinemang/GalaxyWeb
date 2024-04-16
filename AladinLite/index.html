@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxy Map</title>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
+
+<script src="{{ url_for('static', filename='server.js') }}"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.css" type="text/css">
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js"></script>
+<script src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js"></script>
+
+
+
+
+
+</head>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+
+<body class="bg-dark" >
+  <div class = "content-wrap">
+    <header>
+      <link rel="shortcut icon" href="">
+      <h1 class="text-glow">Galaxy Map</h1>
+      <ul>
+        <li><a href="#">Tools</a></li>
+        <li><a href="#">Setting</a></li>
+        
+      </ul>
+    </header>
+    <div class="container">
+      <section >
+        <!-- Main content -->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.9.1.min.js" charset="utf-8"></script>
+
+        <!-- Aladin Lite container at requested dimensions -->
+        <div id="aladin-lite-div" style="width:700px;height:400px;"></div>
+    
+        <!-- Aladin Lite JS code -->
+        <script type="text/javascript" src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+    
+        <!-- Creation of Aladin Lite instance with initial parameters -->
+        <script type="text/javascript">
+            let aladin;
+            A.init.then(() => {
+                aladin = A.aladin('#aladin-lite-div', {survey: "P/DSS2/color", fov:1.5, target: "M 20"});
+            });
+        </script>
+        <div id="map"></div>
+        <div id="bokehPlot">
+          
+
+          <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" id="uploadBtn" name="file" style="display:none;">
+            <label for="uploadBtn" class="upload-label">
+              <i class="fas fa-upload"></i>
+              Upload File
+            </label>
+            <input type="submit" name = "UploadFile" value="Upload File"/>
+          </form>
+          
+         
+       
+          <!-- uploadResult라는 ID를 가진 요소를 만듭니다. -->
+        <div id="uploadResult"></div>
+
+      </div>
+      
+      </section>
+      <aside>
+        <nav>
+          <iframe src = "http://localhost:5006/plot_script" width = "400" height = "300"></iframe>
+        
+
+        </nav>
+      </aside>
+    </div>
+    
+
+    
+
+    <footer class="text-center mt-4">
+      <a href="https://as.vanderbilt.edu/physics-astronomy/"> Vanderbilt University Department of Physics and Astronomy</a>
+      
+    </footer>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src = "skymap_generator.js"></script>
+
+</body>
+</html>
