@@ -1,97 +1,112 @@
 // Filename - App.js
 
-import axios from "axios";
+import React, { useState } from "react";
+import Papa from "papaparse";
+import "./App.css";
 
-import React, { Component } from "react";
+// Allowed extensions for input file
+const allowedExtensions = ["csv"];
 
-class App extends Component {
-	state = {
-		// Initially, no file is selected
-		selectedFile: null,
-	};
+const App = () => {
 
-	// On file select (from the pop up)
-	onFileChange = (event) => {
-		// Update the state
-		this.setState({
-			selectedFile: event.target.files[0],
-		});
-	};
+	// This state will store the parsed data
+	const [data, setData] = useState([]);
 
-	// On file upload (click the upload button)
-	onFileUpload = () => {
-		// Create an object of formData
-		const formData = new FormData();
+	// It state will contain the error when
+	// correct file extension is not used
+	const [error, setError] = useState("");
 
-		// Update the formData object
-		formData.append(
-			"myFile",
-			this.state.selectedFile,
-			this.state.selectedFile.name
-		);
+	// It will store the file uploaded by the user
+	const [file, setFile] = useState("");
 
-		// Details of the uploaded file
-		console.log(this.state.selectedFile);
+	// This function will be called when
+	// the file input changes
+	const handleFileChange = (e) => {
+		setError("");
 
-		// Request made to the backend api
-		// Send formData object
-		axios.post("api/uploadfile", formData);
-	};
+		// Check if user has entered the file
+		if (e.target.files.length) {
+			const inputFile = e.target.files[0];
 
-	// File content to be displayed after
-	// file upload is complete
-	fileData = () => {
-		if (this.state.selectedFile) {
-			return (
-				<div>
-					<h2>File Details:</h2>
-					<p>
-						File Name:{" "}
-						{this.state.selectedFile.name}
-					</p>
+			// Check the file extensions, if it not
+			// included in the allowed extensions
+			// we show the error
+			const fileExtension =
+				inputFile?.type.split("/")[1];
+			if (
+				!allowedExtensions.includes(fileExtension)
+			) {
+				setError("Please input a csv file");
+				return;
+			}
 
-					<p>
-						File Type:{" "}
-						{this.state.selectedFile.type}
-					</p>
-
-					<p>
-						Last Modified:{" "}
-						{this.state.selectedFile.lastModifiedDate.toDateString()}
-					</p>
-				</div>
-			);
-		} else {
-			return (
-				<div>
-					<br />
-					<h4>
-						Choose before Pressing the Upload
-						button
-					</h4>
-				</div>
-			);
+			// If input type is correct set the state
+			setFile(inputFile);
 		}
 	};
+	const handleParse = () => {
+	
+		// If user clicks the parse button without
+		// a file we show a error
+		if (!file) return alert("Enter a valid file");
 
-	render() {
-		return (
-			<div>
-				<h1>GalaxyWeb</h1>
-				<h3>Upload your GW file</h3>
+		// Initialize a reader which allows user
+		// to read any file or blob.
+		const reader = new FileReader();
+
+		// Event listener on reader when the file
+		// loads, we parse it and set the data.
+		reader.onload = async ({ target }) => {
+			const csv = Papa.parse(target.result, {
+				header: true,
+			});
+			const parsedData = csv?.data;
+			const rows = Object.keys(parsedData[0]);
+
+			const columns = Object.values(parsedData[0]);
+			const res = rows.reduce((acc, e, i) => {
+				return [...acc, [[e], columns[i]]];
+			}, []);
+			console.log(res);
+			setData(res);
+		};
+		reader.readAsText(file);
+	};
+
+	return (
+		<div className="App">
+			<h1 className="geeks">GeeksforGeeks</h1>
+			<h3>Read CSV file in React</h3>
+			<div className="container">
+				<label
+					htmlFor="csvInput"
+					style={{ display: "block" }}
+				>
+					Enter CSV File
+				</label>
+				<input
+					onChange={handleFileChange}
+					id="csvInput"
+					name="file"
+					type="File"
+				/>
 				<div>
-					<input
-						type="file"
-						onChange={this.onFileChange}
-					/>
-					<button onClick={this.onFileUpload}>
-						Upload!
+					<button onClick={handleParse}>
+						upload
 					</button>
 				</div>
-				{this.fileData()}
+				<div style={{ marginTop: "3rem" }}>
+					{error
+						? error
+						: data.map((e, i) => (
+							<div key={i} className="item">
+								{e[0]}:{e[1]}
+							</div>
+						))}
+				</div>
 			</div>
-		);
-	}
-}
+		</div>
+	);
+};
 
 export default App;
